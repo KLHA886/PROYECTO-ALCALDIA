@@ -12,7 +12,7 @@ use yii\helpers\Html;
 
 $this->title = 'Administración de proyectos';
 $this->params['breadcrumbs'][] = $this->title;
-$states = ['Borrador', 'Presentado', 'En revisión', 'Aprobado', 'Rechazado'];
+$states = ['Borrador', 'Presentado', 'En revisión', 'Subsanación', 'Aprobado', 'Rechazado'];
 ?>
 <div class="administracion-proyectos">
     <div class="d-flex justify-content-between align-items-start mb-4">

@@ -30,4 +30,11 @@ final class EstadoProyectoFormTest extends Unit
 
         self::assertSame([], $model->allowedStates());
     }
+
+    public function testReviewCanRequestCorrection(): void
+    {
+        $model = new EstadoProyectoForm(['estadoActual' => 'En revisión', 'estado' => 'Subsanación']);
+
+        self::assertTrue($model->validate());
+    }
 }

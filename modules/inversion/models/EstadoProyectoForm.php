@@ -11,7 +11,8 @@ final class EstadoProyectoForm extends Model
     private const TRANSITIONS = [
         'Borrador' => ['Presentado'],
         'Presentado' => ['En revisión', 'Rechazado'],
-        'En revisión' => ['Aprobado', 'Rechazado'],
+        'En revisión' => ['Subsanación', 'Aprobado', 'Rechazado'],
+        'Subsanación' => ['En revisión'],
         'Aprobado' => [],
         'Rechazado' => ['En revisión'],
     ];

@@ -48,4 +48,16 @@ final class UserTest extends \Codeception\Test\Unit
         verify($user->validateAuthKey('test100key'))->notEmpty();
         verify($user->validateAuthKey('test102key'))->empty();
     }
+
+    public function testRolePermissions(): void
+    {
+        $admin = User::findByUsername('admin');
+        $reviewer = User::findByUsername('revisor');
+        $investor = User::findByUsername('demo');
+
+        self::assertTrue($admin?->can(User::PERMISSION_UPDATE_PROJECT_STATUS));
+        self::assertTrue($reviewer?->can(User::PERMISSION_REVIEW_PROJECTS));
+        self::assertTrue($reviewer?->can(User::PERMISSION_DOWNLOAD_DOCUMENTS));
+        self::assertFalse($investor?->can(User::PERMISSION_REVIEW_PROJECTS));
+    }
 }

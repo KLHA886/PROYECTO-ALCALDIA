@@ -105,10 +105,14 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
 
                     <?php ActiveForm::end(); ?>
 
-                    <div class="text-body-secondary text-center mt-3 small">
-                        You may login with <strong>admin/admin</strong> or <strong>demo/demo</strong>.<br>
-                        To modify the username/password, check <code>app\models\User::$users</code>.
-                    </div>
+                    <?php if (YII_ENV_DEV): ?>
+                        <div class="text-body-secondary text-center mt-3 small">
+                            Accesos locales:
+                            <strong>admin/admin</strong>,
+                            <strong>revisor/revisor</strong> o
+                            <strong>demo/demo</strong>.
+                        </div>
+                    <?php endif ?>
 
                 </div>
             </div>

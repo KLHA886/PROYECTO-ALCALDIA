@@ -35,6 +35,8 @@ final class SolicitudStorage
         FileHelper::createDirectory($directory, 0770);
         $finalDirectory = null;
         $transaction = $db->beginTransaction();
+        $projectId = 0;
+        $code = '';
 
         try {
             $documents = $this->saveDocuments($form, $directory);
@@ -54,9 +56,15 @@ final class SolicitudStorage
                 )],
                 ['proyecto_id' => $projectId],
             )->execute();
+            (new ProyectoHistory($db))->record(
+                $projectId,
+                'Inversionista',
+                'Solicitud presentada',
+                null,
+                'Presentado',
+                'Expediente registrado con código ' . $code,
+            );
             $transaction->commit();
-
-            return $code;
         } catch (Throwable $exception) {
             if ($transaction->isActive) {
                 $transaction->rollBack();
@@ -69,6 +77,15 @@ final class SolicitudStorage
             }
             throw $exception;
         }
+
+        (new ProyectoNotifier($db))->notify(
+            $projectId,
+            $form->email,
+            'Solicitud de inversión registrada',
+            'Su solicitud fue registrada correctamente. Código de seguimiento: ' . $code,
+        );
+
+        return $code;
     }
 
     /**

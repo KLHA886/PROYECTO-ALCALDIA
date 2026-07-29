@@ -7,6 +7,7 @@ declare(strict_types=1);
 use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
 use yii\helpers\Html;
+use app\models\User;
 
 $items = [
     [
@@ -14,9 +15,14 @@ $items = [
         'url' => ['/inversion/solicitud/crear'],
     ],
     [
+        'label' => 'Subsanar expediente',
+        'url' => ['/inversion/subsanacion/index'],
+    ],
+    [
         'label' => 'Administración',
         'url' => ['/inversion/administracion/index'],
-        'visible' => Yii::$app->user->identity?->username === 'admin',
+        'visible' => Yii::$app->user->identity instanceof User
+            && Yii::$app->user->identity->can(User::PERMISSION_REVIEW_PROJECTS),
     ],
     [
         'label' => 'Home',

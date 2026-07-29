@@ -54,6 +54,11 @@ class LoginForm extends Model
 
             if (!$user || !$this->security->validatePassword($this->password, $user->passwordHash)) {
                 $this->addError($attribute, 'Incorrect username or password.');
+            } elseif (YII_ENV_PROD && $user->mustChangePassword) {
+                $this->addError(
+                    $attribute,
+                    'La contraseña inicial debe ser rotada antes de acceder a producción.',
+                );
             }
         }
     }
@@ -65,7 +70,13 @@ class LoginForm extends Model
     public function login(): bool
     {
         if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+            $user = $this->getUser();
+            $loggedIn = Yii::$app->user->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
+            if ($loggedIn && $user !== null) {
+                $user->recordLogin();
+            }
+
+            return $loggedIn;
         }
 
         return false;

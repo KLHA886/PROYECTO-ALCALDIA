@@ -16,7 +16,7 @@ final class ProyectoSearch extends Model
         return [
             [['texto', 'estado'], 'trim'],
             ['texto', 'string', 'max' => 200],
-            ['estado', 'in', 'range' => ['Borrador', 'Presentado', 'En revisión', 'Aprobado', 'Rechazado']],
+            ['estado', 'in', 'range' => ['Borrador', 'Presentado', 'En revisión', 'Subsanación', 'Aprobado', 'Rechazado']],
         ];
     }
 

@@ -351,3 +351,29 @@ a.desc:after {
     font-size: 2rem;
     font-weight: 700;
 }
+
+.subsanacion-expediente {
+    width: 100%;
+    max-width: 900px;
+}
+
+.audit-timeline {
+    border-left: 2px solid var(--bs-border-color);
+    margin-left: .4rem;
+    padding-left: 1.25rem;
+}
+
+.audit-event {
+    position: relative;
+}
+
+.audit-event::before {
+    content: '';
+    position: absolute;
+    width: .7rem;
+    height: .7rem;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    left: -1.65rem;
+    top: .35rem;
+}

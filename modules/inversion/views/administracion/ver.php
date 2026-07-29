@@ -6,6 +6,7 @@ declare(strict_types=1);
 /** @var array<string, mixed> $project */
 /** @var array<string, array<int, array<string, mixed>>> $relations */
 /** @var app\modules\inversion\models\EstadoProyectoForm $statusForm */
+/** @var app\modules\inversion\models\ObservacionDocumentoForm $observationForm */
 
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
@@ -79,6 +80,57 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php endforeach ?>
                 </div>
             </section>
+
+            <?php if ($relations['observaciones'] !== []): ?>
+                <section class="card border-0 shadow-sm mt-4">
+                    <div class="card-body p-4">
+                        <h2 class="h5">Historial de observaciones</h2>
+                        <?php foreach ($relations['observaciones'] as $observation): ?>
+                            <div class="border-start border-3 ps-3 mb-3">
+                                <div class="d-flex justify-content-between gap-2">
+                                    <strong><?= Html::encode((string) $observation['tipo_documento']) ?></strong>
+                                    <span class="badge text-bg-secondary"><?= Html::encode((string) $observation['estado']) ?></span>
+                                </div>
+                                <p class="mb-1"><?= nl2br(Html::encode((string) $observation['observacion'])) ?></p>
+                                <small class="text-body-secondary">
+                                    <?= Html::encode((string) $observation['autor']) ?> ·
+                                    <?= Yii::$app->formatter->asDatetime($observation['fecha_creacion']) ?>
+                                </small>
+                            </div>
+                        <?php endforeach ?>
+                    </div>
+                </section>
+            <?php endif ?>
+
+            <section class="card border-0 shadow-sm mt-4">
+                <div class="card-body p-4">
+                    <h2 class="h5">Trazabilidad del expediente</h2>
+                    <?php if ($relations['historial'] === []): ?>
+                        <p class="text-body-secondary mb-0">Aún no existen eventos registrados.</p>
+                    <?php else: ?>
+                        <div class="audit-timeline">
+                            <?php foreach ($relations['historial'] as $event): ?>
+                                <div class="audit-event pb-3">
+                                    <div class="fw-semibold"><?= Html::encode((string) $event['accion']) ?></div>
+                                    <?php if ($event['estado_anterior'] !== null || $event['estado_nuevo'] !== null): ?>
+                                        <div class="small">
+                                            <?= Html::encode((string) $event['estado_anterior']) ?>
+                                            → <?= Html::encode((string) $event['estado_nuevo']) ?>
+                                        </div>
+                                    <?php endif ?>
+                                    <?php if ($event['detalle'] !== null): ?>
+                                        <div><?= Html::encode((string) $event['detalle']) ?></div>
+                                    <?php endif ?>
+                                    <small class="text-body-secondary">
+                                        <?= Html::encode((string) $event['actor']) ?> ·
+                                        <?= Yii::$app->formatter->asDatetime($event['fecha']) ?>
+                                    </small>
+                                </div>
+                            <?php endforeach ?>
+                        </div>
+                    <?php endif ?>
+                </div>
+            </section>
         </div>
 
         <aside class="col-lg-4">
@@ -109,6 +161,44 @@ $this->params['breadcrumbs'][] = $this->title;
                             'data' => ['confirm' => '¿Confirma el cambio de estado?'],
                         ]) ?>
                         <?php ActiveForm::end() ?>
+                    <?php endif ?>
+                </div>
+            </section>
+
+            <?php if (in_array($project['estado'], ['En revisión', 'Subsanación'], true) && $relations['documentos'] !== []): ?>
+                <section class="card border-0 shadow-sm mt-4">
+                    <div class="card-body p-4">
+                        <h2 class="h5">Solicitar subsanación</h2>
+                        <?php $form = ActiveForm::begin(['action' => ['observacion', 'id' => $project['id']]]) ?>
+                        <?= $form->field($observationForm, 'documentoId')->dropDownList(
+                            array_column($relations['documentos'], 'tipo_documento', 'id'),
+                            ['prompt' => 'Seleccione un documento'],
+                        ) ?>
+                        <?= $form->field($observationForm, 'observacion')->textarea(['rows' => 4]) ?>
+                        <?= Html::submitButton('Enviar observación', [
+                            'class' => 'btn btn-warning w-100',
+                            'data' => ['confirm' => 'El expediente pasará a subsanación. ¿Desea continuar?'],
+                        ]) ?>
+                        <?php ActiveForm::end() ?>
+                    </div>
+                </section>
+            <?php endif ?>
+
+            <section class="card border-0 shadow-sm mt-4">
+                <div class="card-body p-4">
+                    <h2 class="h5">Notificaciones</h2>
+                    <?php if ($relations['notificaciones'] === []): ?>
+                        <p class="text-body-secondary mb-0">No se han generado notificaciones.</p>
+                    <?php else: ?>
+                        <?php foreach ($relations['notificaciones'] as $notification): ?>
+                            <div class="border-bottom pb-2 mb-2">
+                                <div class="small fw-semibold"><?= Html::encode((string) $notification['asunto']) ?></div>
+                                <div class="d-flex justify-content-between small text-body-secondary">
+                                    <span><?= Html::encode((string) $notification['destinatario']) ?></span>
+                                    <span><?= Html::encode((string) $notification['estado']) ?></span>
+                                </div>
+                            </div>
+                        <?php endforeach ?>
                     <?php endif ?>
                 </div>
             </section>

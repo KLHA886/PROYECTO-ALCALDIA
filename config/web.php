@@ -1,7 +1,19 @@
 <?php
 
+use app\components\Environment;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
+$mailerDsn = Environment::string('MAILER_DSN');
+$isProduction = Environment::string('APP_ENV', 'dev') === 'prod';
+$mailerConfig = [
+    'class' => \yii\symfonymailer\Mailer::class,
+    'useFileTransport' => $mailerDsn === '',
+    'viewPath' => '@app/mail',
+];
+if ($mailerDsn !== '') {
+    $mailerConfig['transport'] = $mailerDsn;
+}
 
 $config = [
     'id' => 'basic',
@@ -10,12 +22,7 @@ $config = [
     'bootstrap' => ['log'],
     'container' => [
         'singletons' => [
-            \yii\mail\MailerInterface::class => [
-                'class' => \yii\symfonymailer\Mailer::class,
-                // send all mails to a file by default.
-                'useFileTransport' => true,
-                'viewPath' => '@app/mail',
-            ],
+            \yii\mail\MailerInterface::class => $mailerConfig,
         ],
     ],
     'aliases' => [
@@ -24,8 +31,27 @@ $config = [
     ],
     'components' => [
         'request' => [
-            // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => 'r1WQX_VezjaQ5hxwheUOIc6eA_s9SWfu',
+            'cookieValidationKey' => Environment::string(
+                'APP_COOKIE_VALIDATION_KEY',
+                'r1WQX_VezjaQ5hxwheUOIc6eA_s9SWfu',
+            ),
+            'csrfCookie' => [
+                'httpOnly' => true,
+                'sameSite' => \yii\web\Cookie::SAME_SITE_LAX,
+                'secure' => $isProduction,
+            ],
+        ],
+        'response' => [
+            'on beforeSend' => static function (\yii\base\Event $event) use ($isProduction): void {
+                $headers = $event->sender->headers;
+                $headers->set('X-Content-Type-Options', 'nosniff');
+                $headers->set('X-Frame-Options', 'SAMEORIGIN');
+                $headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+                $headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+                if ($isProduction && Yii::$app->request->isSecureConnection) {
+                    $headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+                }
+            },
         ],
         'cache' => [
             'class' => \yii\caching\FileCache::class,
@@ -33,6 +59,19 @@ $config = [
         'user' => [
             'identityClass' => \app\models\User::class,
             'enableAutoLogin' => true,
+            'identityCookie' => [
+                'name' => '_identity',
+                'httpOnly' => true,
+                'sameSite' => \yii\web\Cookie::SAME_SITE_LAX,
+                'secure' => $isProduction,
+            ],
+        ],
+        'session' => [
+            'cookieParams' => [
+                'httponly' => true,
+                'samesite' => \yii\web\Cookie::SAME_SITE_LAX,
+                'secure' => $isProduction,
+            ],
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
