@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\modules\inversion\services;
 
+use app\models\User;
 use Yii;
 use Throwable;
 use yii\db\Connection;
@@ -24,9 +25,11 @@ final class SecurityAudit
     ): void {
         $request = Yii::$app->request;
         $ip = $request->userIP ?? '';
+        $identity = Yii::$app->user->identity;
+        $authenticatedUsername = $identity instanceof User ? $identity->username : null;
         try {
             ($this->connection ?? Yii::$app->db)->createCommand()->insert('auditoria_acceso', [
-                'usuario' => $username ?? Yii::$app->user->identity?->username,
+                'usuario' => $username ?? $authenticatedUsername,
                 'accion' => $action,
                 'recurso' => $resource,
                 'recurso_id' => $resourceId,

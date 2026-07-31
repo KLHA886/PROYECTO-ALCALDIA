@@ -64,6 +64,10 @@ class User extends BaseObject implements IdentityInterface
             return self::fromDatabase(['id' => $id, 'activo' => 1]);
         }
 
+        if (!YII_ENV_TEST) {
+            return null;
+        }
+
         return isset(self::$_users[$id]) ? new static(self::$_users[$id]) : null;
     }
 
@@ -74,6 +78,10 @@ class User extends BaseObject implements IdentityInterface
     {
         if (self::databaseAvailable()) {
             return self::fromDatabase(['access_token' => $token, 'activo' => 1]);
+        }
+
+        if (!YII_ENV_TEST) {
+            return null;
         }
 
         foreach (self::$_users as $user) {
@@ -95,6 +103,10 @@ class User extends BaseObject implements IdentityInterface
     {
         if (self::databaseAvailable()) {
             return self::fromDatabase(['username' => $username, 'activo' => 1]);
+        }
+
+        if (!YII_ENV_TEST) {
+            return null;
         }
 
         foreach (self::$_users as $user) {

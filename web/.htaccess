@@ -1,4 +1,9 @@
 RewriteEngine on
+
+# Use a single local host so every browser tab shares the same cookies.
+RewriteCond %{HTTP_HOST} ^localhost(?::\d+)?$ [NC]
+RewriteRule ^ http://127.0.0.1%{REQUEST_URI} [R=302,L]
+
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule . index.php [L]

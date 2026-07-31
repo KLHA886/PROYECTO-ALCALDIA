@@ -162,10 +162,13 @@ final class SolicitudStorage
         ])->execute();
 
         foreach ($documents as $attribute => $filename) {
+            $uploadedFile = $form->{$attribute};
             $db->createCommand()->insert('documento', [
                 'proyecto_id' => $projectId,
                 'tipo_documento' => self::DOCUMENT_TYPES[$attribute],
-                'nombre_archivo' => $form->{$attribute}?->name ?? $filename,
+                'nombre_archivo' => $uploadedFile instanceof \yii\web\UploadedFile
+                    ? $uploadedFile->name
+                    : $filename,
                 'ruta_archivo' => $directory . DIRECTORY_SEPARATOR . $filename,
                 'firmado' => (int) $form->documentacionFirmada,
             ])->execute();

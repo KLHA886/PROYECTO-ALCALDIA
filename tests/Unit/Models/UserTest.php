@@ -55,9 +55,12 @@ final class UserTest extends \Codeception\Test\Unit
         $reviewer = User::findByUsername('revisor');
         $investor = User::findByUsername('demo');
 
-        self::assertTrue($admin?->can(User::PERMISSION_UPDATE_PROJECT_STATUS));
-        self::assertTrue($reviewer?->can(User::PERMISSION_REVIEW_PROJECTS));
-        self::assertTrue($reviewer?->can(User::PERMISSION_DOWNLOAD_DOCUMENTS));
-        self::assertFalse($investor?->can(User::PERMISSION_REVIEW_PROJECTS));
+        self::assertNotNull($admin);
+        self::assertNotNull($reviewer);
+        self::assertNotNull($investor);
+        self::assertTrue($admin->can(User::PERMISSION_UPDATE_PROJECT_STATUS));
+        self::assertTrue($reviewer->can(User::PERMISSION_REVIEW_PROJECTS));
+        self::assertTrue($reviewer->can(User::PERMISSION_DOWNLOAD_DOCUMENTS));
+        self::assertFalse($investor->can(User::PERMISSION_REVIEW_PROJECTS));
     }
 }

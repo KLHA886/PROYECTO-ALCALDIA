@@ -15,9 +15,10 @@ use yii\base\Security;
  */
 class LoginForm extends Model
 {
+    private const AUTH_DURATION = 315360000;
+
     public string $username = '';
     public string $password = '';
-    public bool $rememberMe = true;
     private User|null $_user = null;
     private bool $_userLoaded = false;
     public function __construct(private readonly Security $security, $config = [])
@@ -33,8 +34,6 @@ class LoginForm extends Model
         return [
             // username and password are both required
             [['username', 'password'], 'required'],
-            // rememberMe must be a boolean value
-            ['rememberMe', 'boolean'],
             // password is validated by validatePassword()
             ['password', 'validatePassword'],
         ];
@@ -71,7 +70,7 @@ class LoginForm extends Model
     {
         if ($this->validate()) {
             $user = $this->getUser();
-            $loggedIn = Yii::$app->user->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
+            $loggedIn = Yii::$app->user->login($user, self::AUTH_DURATION);
             if ($loggedIn && $user !== null) {
                 $user->recordLogin();
             }

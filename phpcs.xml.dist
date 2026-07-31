@@ -8,8 +8,10 @@
     <!-- directories to check -->
     <file>assets</file>
     <file>commands</file>
+    <file>components</file>
     <file>controllers</file>
     <file>mail</file>
     <file>models</file>
+    <file>modules</file>
     <file>tests</file>
 </ruleset>

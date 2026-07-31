@@ -12,7 +12,8 @@ final class SubsanacionForm extends Model
     public string $codigo = '';
     public string $ruc = '';
     public string $observacionId = '';
-    public ?UploadedFile $documento = null;
+    /** @var UploadedFile|string|null */
+    public $documento = null;
 
     public function rules(): array
     {

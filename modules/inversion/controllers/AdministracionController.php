@@ -167,10 +167,11 @@ final class AdministracionController extends Controller
             throw new \yii\web\BadRequestHttpException('El documento no pertenece al proyecto.');
         }
 
-        Yii::$app->db->transaction(static function () use ($id, $model, $project): void {
+        $author = $this->currentUsername();
+        Yii::$app->db->transaction(static function () use ($id, $model, $project, $author): void {
             Yii::$app->db->createCommand()->insert('observacion_documento', [
                 'documento_id' => $model->documentoId,
-                'autor' => Yii::$app->user->identity?->username ?? 'Revisor',
+                'autor' => $author,
                 'observacion' => $model->observacion,
             ])->execute();
             Yii::$app->db->createCommand()
@@ -178,7 +179,7 @@ final class AdministracionController extends Controller
                 ->execute();
             (new ProyectoHistory())->record(
                 $id,
-                Yii::$app->user->identity?->username ?? 'Revisor',
+                $author,
                 'Observación documental',
                 (string) $project['estado'],
                 'Subsanación',
@@ -208,13 +209,14 @@ final class AdministracionController extends Controller
             return $this->redirect(['ver', 'id' => $id]);
         }
 
-        Yii::$app->db->transaction(static function () use ($id, $model, $project): void {
+        $author = $this->currentUsername();
+        Yii::$app->db->transaction(static function () use ($id, $model, $project, $author): void {
             Yii::$app->db->createCommand()
                 ->update('proyecto', ['estado' => $model->estado], ['id' => $id])
                 ->execute();
             (new ProyectoHistory())->record(
                 $id,
-                Yii::$app->user->identity?->username ?? 'Revisor',
+                $author,
                 'Cambio de estado',
                 (string) $project['estado'],
                 $model->estado,
@@ -283,5 +285,11 @@ final class AdministracionController extends Controller
         if (!$identity instanceof User || !$identity->can($permission)) {
             throw new \yii\web\ForbiddenHttpException('No tiene permisos para realizar esta acción.');
         }
+    }
+
+    private function currentUsername(): string
+    {
+        $identity = Yii::$app->user->identity;
+        return $identity instanceof User ? $identity->username : 'Revisor';
     }
 }

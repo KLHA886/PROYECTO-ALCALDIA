@@ -43,13 +43,20 @@ final class SolicitudForm extends Model
     public bool $declaracionAntilavado = false;
     public bool $documentacionFirmada = false;
 
-    public ?UploadedFile $peticionFormal = null;
-    public ?UploadedFile $rucDocumento = null;
-    public ?UploadedFile $cedulaDocumento = null;
-    public ?UploadedFile $proyectoDocumento = null;
-    public ?UploadedFile $cronogramaObra = null;
-    public ?UploadedFile $planosObra = null;
-    public ?UploadedFile $certificadoNoAdeudar = null;
+    /** @var UploadedFile|string|null */
+    public $peticionFormal = null;
+    /** @var UploadedFile|string|null */
+    public $rucDocumento = null;
+    /** @var UploadedFile|string|null */
+    public $cedulaDocumento = null;
+    /** @var UploadedFile|string|null */
+    public $proyectoDocumento = null;
+    /** @var UploadedFile|string|null */
+    public $cronogramaObra = null;
+    /** @var UploadedFile|string|null */
+    public $planosObra = null;
+    /** @var UploadedFile|string|null */
+    public $certificadoNoAdeudar = null;
 
     public function rules(): array
     {

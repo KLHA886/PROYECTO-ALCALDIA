@@ -2,8 +2,8 @@
 
 ## 1. Variables de entorno
 
-Configure en Apache las variables documentadas en `.env.example`. El archivo `.env`
-es únicamente una referencia local: la aplicación no lo carga ni debe publicarse.
+Configure en Apache las variables documentadas en `.env.example`. En desarrollo local,
+la aplicación carga `.env`; está excluido de Git y nunca debe publicarse.
 
 En producción son obligatorias:
 

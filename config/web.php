@@ -36,7 +36,9 @@ $config = [
                 'r1WQX_VezjaQ5hxwheUOIc6eA_s9SWfu',
             ),
             'csrfCookie' => [
+                'name' => '_csrf_inversiones',
                 'httpOnly' => true,
+                'path' => '/',
                 'sameSite' => \yii\web\Cookie::SAME_SITE_LAX,
                 'secure' => $isProduction,
             ],
@@ -59,16 +61,22 @@ $config = [
         'user' => [
             'identityClass' => \app\models\User::class,
             'enableAutoLogin' => true,
+            'autoRenewCookie' => true,
             'identityCookie' => [
-                'name' => '_identity',
+                'name' => '_identity_inversiones_v2',
                 'httpOnly' => true,
+                'path' => '/PROYECTO-ALCALDIA/web',
                 'sameSite' => \yii\web\Cookie::SAME_SITE_LAX,
                 'secure' => $isProduction,
             ],
         ],
         'session' => [
+            'name' => 'inversiones_session_v2',
+            'timeout' => 315360000,
             'cookieParams' => [
+                'lifetime' => 315360000,
                 'httponly' => true,
+                'path' => '/PROYECTO-ALCALDIA/web',
                 'samesite' => \yii\web\Cookie::SAME_SITE_LAX,
                 'secure' => $isProduction,
             ],
@@ -87,14 +95,13 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+            'enableStrictParsing' => false,
             'rules' => [
             ],
         ],
-        */
     ],
     'modules' => [
         'inversion' => [

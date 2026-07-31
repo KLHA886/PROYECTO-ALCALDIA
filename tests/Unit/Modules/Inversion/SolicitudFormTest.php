@@ -51,6 +51,19 @@ final class SolicitudFormTest extends Unit
         self::assertTrue($withConstruction->hasErrors('planosObra'));
     }
 
+    public function testPostedFileNamesCanBeLoadedBeforeUploadedFiles(): void
+    {
+        $model = new SolicitudForm();
+
+        self::assertTrue($model->load([
+            'SolicitudForm' => [
+                'peticionFormal' => 'peticion.pdf',
+                'rucDocumento' => 'ruc.pdf',
+            ],
+        ]));
+        self::assertSame('peticion.pdf', $model->peticionFormal);
+    }
+
     private function validModel(): SolicitudForm
     {
         $model = new SolicitudForm([
